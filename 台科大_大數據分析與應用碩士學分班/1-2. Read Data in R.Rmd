@@ -1,0 +1,101 @@
+---
+title: "2. Read Data in R"
+author: "Alvin Lin"
+date: "2017年11月9日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 2. Read Data in R
+## 2.1. 從 R console中輸入資料：
+- 利用 readline 輸入一行字串 ("character")
+```{r}
+readline()
+"I am a R user!"
+```
+
+- 利用 scan 輸入一組數值型態的向量 ("numeric")
+- scan() 只能接受數值資料
+- 按一次enter鍵可以輸入下一筆數字，連按兩次enter將結束輸入。
+```{r}
+1
+2
+```
+## 2.2. 設定 R 環境的工作目錄
+- 利用 getwd 來查詢目前的工作目錄 (Working directory)
+```{r}
+getwd()
+```
+- RStudio IDE的使用者可以發現工作目錄會顯示在Console介面的上方
+- 工作目錄的設定與讀取電腦上檔案的相對位置有關，適當的調整有助於工作流程的順暢
+- 想要更改工作目錄可以用 setwd(dir) 這個指令
+- 參數dir表示想要指向的工作目錄
+```{r}
+setwd("D:/R_workspace/台科大")
+getwd()
+```
+
+## 2.3. 將 vector 輸出至檔案
+- 先用file建立檔案連結(file connection)，再用cat函數將向量輸出至該檔案
+```{r}
+output <- file('output.txt')
+cat(1:100,sep='\t',file=output)
+close(output)
+```
+
+## 2.4. 讀取/輸出 text lines 形式的來源
+- 當資料屬於非表格形式或非結構化時，可使用readLines讀取檔案
+- 利用 writeLines 將對應的結果輸出
+```{r}
+output <- file('output.txt')
+writeLines(as.character(1:12),con=output)
+```
+```{r}
+input <- readLines(output)
+print(input)
+```
+
+## 2.5. 讀取/輸出 表格形式的資料
+- 利用read.table讀檔，利用write.table輸出檔案
+```{r}
+# a typical table format data
+head(iris)
+```
+```{r}
+# write to a file
+write.table(iris, file='iris.csv',sep=',')
+# or, more concisely:
+write.csv(iris, file='iris.csv')
+```
+```{r}
+data <- read.table(file='iris.csv',header = TRUE, sep=',')
+# or, more concisely:
+data <- read.csv(file='iris.csv')
+# if you don't want to type in the path
+data <- read.table(file=file.choose(),sep=',')
+```
+
+- help(‘read.table’) for more information
+
+
+## 2.6. Troubleshooting
+- 讀檔之前，先觀察檔案
+    - 編碼通常都是 UTF8 或 BIG5
+        - Linux, Darwin: “UTF-8”
+        - Windows: “BIG-5”
+- library function
+    - 依照不同檔案格式選擇
+    - readLines, read.csv….
+- 如果你想在 windows 環境下讀取含有中文字以utf8編碼的檔案，有兩種建議做法
+```{r}
+# Solution A
+dat1 <- read.csv("data/ubike-sample-data-utf8.csv",encoding = "utf8")
+
+# Solution B
+f <- file("ubike-sample-data-utf8.csv", encoding = "utf8" )
+dat1 <- read.csv(f)
+```
+
