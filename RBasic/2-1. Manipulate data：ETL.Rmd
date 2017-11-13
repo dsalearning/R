@@ -1,0 +1,82 @@
+---
+title: '2-1. Manipulate data: ETL'
+author: "Alvin Lin"
+date: "2017年11月9日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## 1.1. magrittr, dplyr
+- 壓縮的程式碼不好讀
+- 展開的程式碼會產生很多暫存變數
+- 套件 magrittr 解決了這個問題
+- Pipeline style
+```{r}
+# OLD school
+ans1 <- ubike$sna
+ans1.1 <- unique(ans1) # unique可列出所有不重複的項目
+print(head(ans1.1, n = 10))
+
+# pipeline style
+library(magrittr)
+ubike$sna %>%
+  unique() %>% head(n = 10) %>%
+  print()
+
+ubike$sna %>% unique() %>% head(n = 10) %>% print()
+
+```
+
+## dplyr
+- 讓 R 使用者可以用更有彈性的方式來處理資料
+- 整合 magrittr pipeline
+- 針對 data.frame 做設計（名稱中的d）
+- 設計理念
+    - Step by step
+    - 處理速度直覺又快
+    - 支援異質資料源（data.frame 或資料庫中的表格）
+    - 結合資料整理工具優點（ex. Excel, SQL）
+
+## 官方文件：vignette
+- 更詳細的 dplyr 介紹可以閱讀 dplyr 的小論文
+- R 的開發者會針對一個主題撰寫小論文做介紹
+```{r}
+vignette(all = TRUE, package = "dplyr")
+
+vignette("dplyr", package = "dplyr")
+```
+
+## dplyr 常用指令
+- filter 對列做篩選
+- select 對欄做篩選
+- mutate 更改欄或新增欄
+- arrange 排列
+- group_by+summarise 依照類別處理
+- 合併欄位
+
+
+## 1.2. 範例實作
+小明想在永和找到新房子，希望以後上下班都靠 ubike 通勤，希望早上可以輕鬆租到車，下班後也可以輕鬆還車。 - 請幫他找出中和區早上七點腳踏車最多的場站。 - 比較 mutate() 與 summarise() 之不同
+```{r}
+library(dplyr)
+
+head(ubike)
+
+select(ubike, hour, sarea, sna, avg.sbi) %>%
+  filter(sarea == '中和區' & hour == 7) %>%
+  mutate(avg.sbi = floor(avg.sbi)) 
+
+select(ubike, hour, sarea, sna, avg.sbi) %>%
+  filter(sarea == '中和區' & hour == 7) %>%
+  group_by(hour, sarea, sna) %>%
+  summarise(avg = mean(avg.sbi) %>% round()) %>%
+  arrange(avg %>% desc())
+```
+
+
+
+

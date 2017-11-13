@@ -1,0 +1,42 @@
+---
+title: "Untitled"
+author: "ertyuio"
+date: "2017年10月28日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## My Notes
+### Section 1
+
+This is my note of R training course.
+
+```{r}
+x <- c(4.39, 2.11, 3.17)
+y <- c("apple", "book", "cat")
+z <- c(TRUE, FALSE, TRUE)
+df <- data.frame(v1 = x, v2 = y, v3 = z)
+print(df)
+
+```
+
+### Section 2
+
+Home work
+
+```{r}
+ubike <- read.csv(file = "ubike-weather-big5.csv",
+                  fileEncoding = 'BIG-5',
+                  stringsAsFactors = F)
+head(ubike)
+
+library(dplyr)
+
+ubike %>% head(10)
+
+
+```
+

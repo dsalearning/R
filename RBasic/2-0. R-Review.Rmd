@@ -1,0 +1,146 @@
+---
+title: "2-0. R-Review"
+author: "Alvin Lin"
+date: "2017年11月9日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# 0. R-Review
+
+## 最重要的小事
+- 程式『語言』
+- Working directory
+    - getwd(): get working directory
+    - setwd()
+- 讀檔之前，先觀察檔案
+- 編碼通常都是 UTF8 或 BIG5
+    - Linux, Darwin: “UTF-8”
+    - Windows: “BIG-5”
+- library function
+    - 依照不同檔案格式選擇
+    - readLines, read.csv….
+
+
+## Packages for today
+- 套件安裝 / install.packages()
+    - magrittr
+    - dplyr
+    - reshape2
+- 載入套件 / library("package.name")    
+
+
+## read data
+- Concept
+```{r}
+# raw <- readLines('檔案路徑', encoding = "BIG-5")
+```
+- Tips: 轉換編碼並存檔
+```{r}
+# 從big5轉utf8
+# raw2 <- iconv(raw, from = "BIG-5", to = "UTF-8")
+
+# 存檔囉～～
+# write.csv(file = "ubikeweatherutf8.csv", x = raw2, fileEncoding = "UTF-8")
+```
+
+## 本日資料檔
+ubike x weather 資料檔(右鍵另存新檔)
+- big5 (WIN)
+- utf8 (MAC, LINUX)
+
+```{r}
+# 必先確認 Working Directory!
+# getwd(), setwd()
+
+# read.csv
+ubike <- read.csv(file = "./data/ubike-weather-big5.csv",
+          colClasses = c("factor","integer","integer","factor","factor",
+                         "numeric","numeric","integer","numeric","integer",
+                         "integer","numeric","numeric", "integer","integer",
+                         "numeric","numeric","numeric", "numeric","numeric",
+                         "numeric", "numeric","numeric"), 
+          fileEncoding = 'BIG-5',
+          stringsAsFactors = F)
+
+# 以 colClasses 控制每個欄位的 class，這可使讀檔加速
+# 以 fileEncoding 定義檔案編碼
+```
+
+## 把欄位換成中文
+- CAUTION!: 雖然欄位名稱可以換成中文，但是不建議
+```{r}
+colnames(ubike) <- c("日期","時間","場站代號","場站區域","場站名稱",
+                     "經度","緯度","總停車格","平均車輛數","最大車輛數",
+                     "最小車輛數","車輛數標準差","平均空位數","最大空位數","最小空位數",
+                     "空位數標準差","氣溫","最高溫","最低溫","溼度",
+                     "氣壓","最大風速","降雨量")
+```
+
+- 欄位中文英文對照表
+```{r}
+ubike <- read.csv(file = "./data/ubike-weather-big5.csv",
+          colClasses = c("factor","integer","integer","factor","factor",
+                         "numeric","numeric","integer","numeric","integer",
+                         "integer","numeric","numeric", "integer","integer",
+                         "numeric","numeric","numeric", "numeric","numeric",
+                         "numeric", "numeric","numeric"), 
+          fileEncoding = 'BIG-5',
+          stringsAsFactors = F)
+
+chin <- c("日期","時間","場站代號","場站區域","場站名稱","經度","緯度",
+          "總停車格","平均車輛數","最大車輛數","最小車輛數","車輛數標準差","平均空位數","最大空位數",
+          "最小空位數","空位數標準差","氣溫","最高溫","最低溫","溼度","氣壓",
+          "最大風速","降雨量")
+
+coln <- data.frame(matrix(data="", ncol=4, nrow=11), stringsAsFactors = FALSE)
+coln$X1 <- chin[1:11]
+coln$X2 <- colnames(ubike)[1:11]
+coln$X3[1:10] <- chin[12:21]
+coln$X4[1:10] <- colnames(ubike)[12:21]
+coln
+```
+
+## 取值- 座標
+```{r}
+# structure, summary of ubike dataset
+str(ubike)
+
+# head可以取出前幾列
+head(ubike)
+
+# tail可以取最後幾列
+tail(ubike)
+
+# 利用座標來取值，第一個數表示列位，第二個數表示欄位
+ubike[3,2]
+
+# 可一次選擇多列多欄
+ubike[c(3:4), c(2:5,7)]
+
+# 加上負號可剔除列位欄位
+ubike[c(3:4), -c(6:21)]
+```
+
+## 取值- 指定欄位
+```{r}
+ubike[,4]
+
+ubike[,"sna"]
+
+ubike[["sna"]]
+
+ubike$場站名稱
+```
+
+### Quiz: 以下顯示？
+```{r}
+ubike[ubike$sna%in% c("台北市災害應變中心", "世貿三館"), ]
+```
+
+
+
+
+
